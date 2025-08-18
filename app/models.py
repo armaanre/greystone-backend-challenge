@@ -35,4 +35,17 @@ class Loan(Base):
 
     owner: Mapped[User] = relationship("User", back_populates="loans")
 
+    shared_with: Mapped[list[LoanShare]] = relationship(
+        "LoanShare", back_populates="loan", cascade="all, delete-orphan"
+    )
 
+
+class LoanShare(Base):
+    __tablename__ = "loan_shares"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    loan_id: Mapped[int] = mapped_column(ForeignKey("loans.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
+    loan: Mapped[Loan] = relationship("Loan", back_populates="shared_with")
+    user: Mapped[User] = relationship("User")
