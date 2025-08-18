@@ -3,6 +3,7 @@
 ## Quickstart
 
 1. Create a virtual environment and install dependencies:
+
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
@@ -10,6 +11,7 @@
    ```
 
 2. Run the API:
+
    ```bash
    uvicorn app.main:app --reload
    ```
@@ -20,20 +22,6 @@
 
 - By default, the app uses SQLite stored at `app.db` (see `app/database.py`).
 - Tables are auto-created on app startup and during tests. There is no manual migration required.
-
-Common tasks:
-
-- Initialize (or re-initialize) the local SQLite DB:
-  ```bash
-  rm -f app.db
-  python3 -c "from app.init_db import init_db; init_db(); print('DB ready')"
-  ```
-
-- Change the DB location/engine: edit `SQLALCHEMY_DATABASE_URL` in `app/database.py`, for example:
-  - Postgres: `postgresql+psycopg://user:pass@localhost:5432/greystone`
-  - File-based SQLite at a specific path: `sqlite:////absolute/path/to/app.db`
-
-After changing the URL, run the init snippet above once to create tables.
 
 ## API Overview
 
@@ -56,3 +44,11 @@ pytest -q
 - Uses SQLite via SQLAlchemy 2.x
 - Amortization logic implemented with `Decimal` and standard formula
 - Loans are accessible to their owner and to users they are shared with
+
+## Approach explained
+
+This FastAPI backend creates users based on a name and email address and creates an api key for that specific user. Since loans for a given user are protected, and should only be visible to users with that given api key, it is required for viewing any loan details which was why it is required for viewing any loan data.
+
+For testing purposes I added an endpoint to get a list of created users and their respective api keys. In a production environment this would not be available and some sort of authentication would be added to obtain these keys.
+
+Given the api key you can view the loan details of any user and share them with other users.
