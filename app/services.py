@@ -18,12 +18,6 @@ def to_money(value: Decimal) -> Decimal:
     return value.quantize(TWOPLACES, rounding=ROUND_HALF_UP)
 
 
-@dataclass
-class AmortizationInput:
-    amount: Decimal
-    annual_interest_rate_percent: Decimal
-    term_months: int
-
 
 def compute_monthly_payment(amount: Decimal, annual_interest_rate_percent: Decimal, term_months: int) -> Decimal:
     principal = Decimal(amount)
