@@ -17,6 +17,10 @@ def health_check():
     return {"status": "ok"}
 
 
+@app.get("/")
+def root():
+    return "Hello World"
+
 @app.on_event("startup")
 def on_startup():
     init_db()
