@@ -12,6 +12,7 @@ from app.schemas import (
     LoanCreate,
     LoanOut,
     LoanScheduleItem,
+    LoanShareRequest,
     LoanSummary,
 )
 from app.services import build_amortization_schedule, summarize_schedule_for_month
@@ -106,3 +107,34 @@ def get_summary(
     return summary
 
 
+@router.post("/{loan_id}/share", status_code=status.HTTP_204_NO_CONTENT)
+def share_loan(
+    loan_id: int,
+    payload: LoanShareRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    loan = db.query(Loan).filter(Loan.id == loan_id).first()
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+    if loan.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Only the owner can share this loan")
+
+    target_user = db.query(User).filter(User.email == payload.email).first()
+    if not target_user:
+        raise HTTPException(status_code=404, detail="Target user not found")
+    if target_user.id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot share loan with yourself")
+
+    existing = (
+        db.query(LoanShare)
+        .filter(LoanShare.loan_id == loan.id, LoanShare.user_id == target_user.id)
+        .first()
+    )
+    if existing:
+        return
+
+    share = LoanShare(loan_id=loan.id, user_id=target_user.id)
+    db.add(share)
+    db.commit()
+    return
