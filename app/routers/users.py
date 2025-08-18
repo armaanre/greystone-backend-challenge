@@ -21,3 +21,20 @@ def create_user(payload: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.get("/{email}/api-key")
+def get_user_api_key(email: str, db: Session = Depends(get_db)):
+    """Get a user's API key by email address"""
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    return {"email": user.email, "api_key": user.api_key}
+
+
+@router.get("/", response_model=list[UserOut])
+def list_users(db: Session = Depends(get_db)):
+    """List all users (useful for testing)"""
+    users = db.query(User).all()
+    return users
