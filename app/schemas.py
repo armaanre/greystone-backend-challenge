@@ -53,3 +53,7 @@ class LoanSummary(BaseModel):
     principal_balance: Money
     total_principal_paid: Money
     total_interest_paid: Money
+
+
+class LoanShareRequest(BaseModel):
+    email: EmailStr
