@@ -34,7 +34,7 @@ def compute_monthly_payment(amount: Decimal, annual_interest_rate_percent: Decim
         return to_money(principal / n)
 
     numerator = principal * monthly_rate * (1 + monthly_rate) ** n
-    denominator = (1 + monthly_rate) ** n - 1
+    denominator = ((1 + monthly_rate) ** n) - 1
     payment = numerator / denominator
     return to_money(payment)
 
